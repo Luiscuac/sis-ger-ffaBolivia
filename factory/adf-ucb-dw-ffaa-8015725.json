@@ -1,0 +1,10 @@
+{
+	"name": "adf-ucb-dw-ffaa-8015725",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "chilecentral"
+}
