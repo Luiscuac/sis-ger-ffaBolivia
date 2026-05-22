@@ -1,8 +1,8 @@
 {
-	"name": "bronze_efectivos",
+	"name": "silver_efectivos",
 	"properties": {
 		"folder": {
-			"name": "bronze"
+			"name": "silver"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -15,8 +15,20 @@
 					"name": "source1"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_efectivos",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          id_efectivo as integer,",
@@ -35,7 +47,26 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1"
+				"     format: 'table') ~> source1",
+				"source1 derive(nombre = upper(trim(regexReplace(nombre, '[^a-zA-ZáéíóúÁÉÍÓÚñÑ\\\\s]', ''))),",
+				"          ci = regexReplace(ci, '[^0-9]', ''),",
+				"          salario_mensual = toDecimal(     iif(         rlike(salario_mensual, '.*,[0-9]{1,2}$'),         replace(replace(regexReplace(salario_mensual, '[^0-9\\\\.,]', ''), '.', ''), ',', '.'),         regexReplace(regexReplace(upper(salario_mensual), 'BS\\\\.?\\\\s*', ''), '[^0-9\\\\.]', '')     ), 10, 2),",
+				"          genero = case(rlike(lower(genero), '.*(m|hombre|masc).*'), 'M', rlike(lower(genero), '.*(f|mujer|fem).*'), 'F', 'Desconocido'),",
+				"          estado = case(rlike(lower(estado), '.*(act|a).*'), 'Activo', rlike(lower(estado), '.*(baja|bja).*'), 'Baja', rlike(lower(estado), '.*(reserva|rsv|r).*'), 'Reserva', 'Desconocido'),",
+				"          departamento_origen = case(rlike(lower(departamento_origen), '.*(paz|lp).*'), 'La Paz', rlike(lower(departamento_origen), '.*(cbba|cocha).*'), 'Cochabamba', rlike(lower(departamento_origen), '.*(cruz|sc|scz).*'), 'Santa Cruz', rlike(lower(departamento_origen), '.*(tar|tj).*'), 'Tarija', rlike(lower(departamento_origen), '.*(or|oru).*'), 'Oruro', rlike(lower(departamento_origen), '.*(pot|pt).*'), 'Potosi', rlike(lower(departamento_origen), '.*(ben|bn).*'), 'Beni', rlike(lower(departamento_origen), '.*(pan).*'), 'Pando', rlike(lower(departamento_origen), '.*(chu|ch).*'), 'Chuquisaca', 'Desconocido'),",
+				"          fecha_nacimiento = coalesce(toDate(fecha_nacimiento, 'yyyy/MM/dd'), toDate(fecha_nacimiento, 'dd/MM/yyyy'), toDate(fecha_nacimiento, 'dd-MM-yyyy'), toDate(fecha_nacimiento, 'MM-dd-yyyy'), toDate(fecha_nacimiento, 'yyyyMMdd')),",
+				"          fecha_ingreso = coalesce(toDate(fecha_ingreso, 'yyyy/MM/dd'), toDate(fecha_ingreso, 'dd/MM/yyyy'), toDate(fecha_ingreso, 'dd-MM-yyyy'), toDate(fecha_ingreso, 'MM-dd-yyyy'), toDate(fecha_ingreso, 'yyyyMMdd'))) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}
