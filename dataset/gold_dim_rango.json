@@ -1,0 +1,47 @@
+{
+	"name": "gold_dim_rango",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_ffa_destino",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "gold"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "sk_rango",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "id_rango_origen",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nombre",
+				"type": "varchar"
+			},
+			{
+				"name": "categoria",
+				"type": "varchar"
+			},
+			{
+				"name": "nivel_jerarquico",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "abreviatura",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "gold",
+			"table": "dim_rango"
+		}
+	}
+}

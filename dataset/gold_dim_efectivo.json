@@ -1,0 +1,58 @@
+{
+	"name": "gold_dim_efectivo",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_ffa_destino",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "gold"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "sk_efectivo",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "id_efectivo_origen",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nombre",
+				"type": "varchar"
+			},
+			{
+				"name": "ci",
+				"type": "varchar"
+			},
+			{
+				"name": "genero",
+				"type": "varchar"
+			},
+			{
+				"name": "departamento_origen",
+				"type": "varchar"
+			},
+			{
+				"name": "estado",
+				"type": "varchar"
+			},
+			{
+				"name": "especialidad_nombre",
+				"type": "varchar"
+			},
+			{
+				"name": "especialidad_area",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "gold",
+			"table": "dim_efectivo"
+		}
+	}
+}

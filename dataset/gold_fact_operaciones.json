@@ -1,0 +1,93 @@
+{
+	"name": "gold_fact_operaciones",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_ffa_destino",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "gold"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "sk_operacion",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "id_operacion_origen",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sk_unidad_resp",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sk_zona",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sk_fecha_inicio",
+				"type": "date"
+			},
+			{
+				"name": "sk_fecha_fin",
+				"type": "date"
+			},
+			{
+				"name": "nombre_operacion",
+				"type": "varchar"
+			},
+			{
+				"name": "resultado",
+				"type": "varchar"
+			},
+			{
+				"name": "efectivos_desplegados",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "vehiculos_utilizados",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "duracion_dias",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "costo_operacion",
+				"type": "decimal",
+				"precision": 15,
+				"scale": 2
+			},
+			{
+				"name": "detenidos",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "area_km2",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "incidentes",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "gold",
+			"table": "fact_operaciones"
+		}
+	}
+}

@@ -1,0 +1,38 @@
+{
+	"name": "gold_dim_tipo_movimiento",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_ffa_destino",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "gold"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "sk_tipo_movimiento",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "id_tipo_origen",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nombre",
+				"type": "varchar"
+			},
+			{
+				"name": "descripcion",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "gold",
+			"table": "dim_tipo_movimiento"
+		}
+	}
+}

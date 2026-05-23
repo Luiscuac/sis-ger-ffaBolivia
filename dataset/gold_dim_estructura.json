@@ -1,0 +1,46 @@
+{
+	"name": "gold_dim_estructura",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_ffa_destino",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "gold"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "sk_estructura",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "id_estructura_origen",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nivel",
+				"type": "varchar"
+			},
+			{
+				"name": "nombre",
+				"type": "varchar"
+			},
+			{
+				"name": "sigla",
+				"type": "varchar"
+			},
+			{
+				"name": "tipo",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "gold",
+			"table": "dim_estructura"
+		}
+	}
+}
