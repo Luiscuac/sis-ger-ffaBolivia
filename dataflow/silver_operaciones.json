@@ -1,0 +1,81 @@
+{
+	"name": "silver_operaciones",
+	"properties": {
+		"folder": {
+			"name": "silver"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "bronze_operaciones",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_operaciones",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id_operacion as integer,",
+				"          id_tipo as integer,",
+				"          id_unidad_resp as integer,",
+				"          id_zona as integer,",
+				"          nombre_operacion as string,",
+				"          fecha_inicio as string,",
+				"          fecha_fin as string,",
+				"          efectivos_desplegados as string,",
+				"          vehiculos_utilizados as string,",
+				"          duracion_dias as string,",
+				"          costo_operacion as string,",
+				"          resultado as string,",
+				"          detenidos as string,",
+				"          area_km2 as string,",
+				"          incidentes as string,",
+				"          observaciones as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 derive(nombre_operacion = upper(trim(regexReplace(nombre_operacion, '\\\\n', ' '))),",
+				"          observaciones = trim(regexReplace(observaciones, '\\\\n', ' ')),",
+				"          efectivos_desplegados = case(rlike(lower(efectivos_desplegados), 'cien'), 100, rlike(lower(efectivos_desplegados), 'doscientos'), 200, rlike(lower(efectivos_desplegados), 'trescientos'), 300, rlike(lower(efectivos_desplegados), 'cuatrocientos'), 400, rlike(lower(efectivos_desplegados), 'siete'), 7, rlike(lower(efectivos_desplegados), 'veinte'), 20, toInteger(regexReplace(efectivos_desplegados, '[^0-9]', ''))),",
+				"          vehiculos_utilizados = case(rlike(lower(vehiculos_utilizados), 'cien'), 100, rlike(lower(vehiculos_utilizados), 'doscientos'), 200, rlike(lower(vehiculos_utilizados), 'trescientos'), 300, rlike(lower(vehiculos_utilizados), 'cuatrocientos'), 400, rlike(lower(vehiculos_utilizados), 'siete'), 7, rlike(lower(vehiculos_utilizados), 'veinte'), 20, toInteger(regexReplace(vehiculos_utilizados, '[^0-9]', ''))),",
+				"          duracion_dias = toInteger(regexReplace(duracion_dias, '[^0-9]', '')),",
+				"          detenidos = case(rlike(lower(detenidos), '.*(cero|ningun|sin|-).*'), 0, rlike(lower(detenidos), 'cien'), 100, rlike(lower(detenidos), 'doscientos'), 200, rlike(lower(detenidos), 'trescientos'), 300, toInteger(regexReplace(detenidos, '[^0-9]', ''))),",
+				"          incidentes = case(rlike(lower(incidentes), '.*(cero|ningun|sin|-).*'), 0, rlike(lower(incidentes), '.*uno.*'), 1, rlike(lower(incidentes), '.*dos.*'), 2, rlike(lower(incidentes), '.*tres.*'), 3, rlike(lower(incidentes), '.*cuatro.*'), 4, rlike(lower(incidentes), '.*cinco.*'), 5, toInteger(regexReplace(incidentes, '[^0-9]', ''))),",
+				"          area_km2 = toDecimal(regexReplace(area_km2, '[^0-9\\\\.]', ''), 10, 2),",
+				"          costo_operacion = toDecimal(iif(rlike(upper(costo_operacion), 'USD'), toFloat(regexReplace(costo_operacion, '[^0-9\\\\.]', '')) * 6.96, toFloat(iif(rlike(costo_operacion, '.*,[0-9]{1,2}$'), replace(replace(regexReplace(costo_operacion, '[^0-9\\\\.,]', ''), '.', ''), ',', '.'), regexReplace(replace(replace(upper(costo_operacion), 'BS.-', ''), 'BS.', ''), '[^0-9\\\\.]', '')))), 10, 2),",
+				"          resultado = case(rlike(lower(resultado), '.*(exitos|cumplido|positivo|bueno|logrado|favorable|completada).*'), 'Exitoso', rlike(lower(resultado), '.*(parcial|aceptable|regular|incompleta|proceso|curso).*'), 'Parcial / En Curso', rlike(lower(resultado), '.*(fallid|negativo|sin éxito|sin resultados).*'), 'Fallido', 'No Reportado'),",
+				"          fecha_inicio = coalesce(toDate(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(lower(fecha_inicio), 'ene[a-z]*', '01'), 'feb[a-z]*', '02'), 'mar[a-z]*', '03'), 'abr[a-z]*', '04'), 'may[a-z]*', '05'), 'jun[a-z]*', '06'), 'jul[a-z]*', '07'), 'ago[a-z]*', '08'), 'sep[a-z]*', '09'), 'oct[a-z]*', '10'), 'nov[a-z]*', '11'), 'dic[a-z]*', '12'), '[\\\\s,]+', '-'), 'MM-dd-yyyy'), toDate(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(lower(fecha_inicio), 'ene[a-z]*', '01'), 'feb[a-z]*', '02'), 'mar[a-z]*', '03'), 'abr[a-z]*', '04'), 'may[a-z]*', '05'), 'jun[a-z]*', '06'), 'jul[a-z]*', '07'), 'ago[a-z]*', '08'), 'sep[a-z]*', '09'), 'oct[a-z]*', '10'), 'nov[a-z]*', '11'), 'dic[a-z]*', '12'), '[\\\\s,]+', '-'), 'dd-MM-yyyy'), toDate(fecha_inicio, 'yyyy/MM/dd'), toDate(fecha_inicio, 'yyyy-MM-dd'), toDate(fecha_inicio, 'dd/MM/yyyy'), toDate(fecha_inicio, 'yyyyMMdd')),",
+				"          fecha_fin = coalesce(toDate(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(lower(fecha_fin), 'ene[a-z]*', '01'), 'feb[a-z]*', '02'), 'mar[a-z]*', '03'), 'abr[a-z]*', '04'), 'may[a-z]*', '05'), 'jun[a-z]*', '06'), 'jul[a-z]*', '07'), 'ago[a-z]*', '08'), 'sep[a-z]*', '09'), 'oct[a-z]*', '10'), 'nov[a-z]*', '11'), 'dic[a-z]*', '12'), '[\\\\s,]+', '-'), 'MM-dd-yyyy'), toDate(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(regexReplace(lower(fecha_fin), 'ene[a-z]*', '01'), 'feb[a-z]*', '02'), 'mar[a-z]*', '03'), 'abr[a-z]*', '04'), 'may[a-z]*', '05'), 'jun[a-z]*', '06'), 'jul[a-z]*', '07'), 'ago[a-z]*', '08'), 'sep[a-z]*', '09'), 'oct[a-z]*', '10'), 'nov[a-z]*', '11'), 'dic[a-z]*', '12'), '[\\\\s,]+', '-'), 'dd-MM-yyyy'), toDate(fecha_fin, 'yyyy/MM/dd'), toDate(fecha_fin, 'yyyy-MM-dd'), toDate(fecha_fin, 'dd/MM/yyyy'), toDate(fecha_fin, 'yyyyMMdd'))) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+			]
+		}
+	}
+}

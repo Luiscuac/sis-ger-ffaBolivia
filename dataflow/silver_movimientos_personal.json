@@ -1,0 +1,66 @@
+{
+	"name": "silver_movimientos_personal",
+	"properties": {
+		"folder": {
+			"name": "silver"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "bronze_movimientos_personal",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver__movimientos_personal",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id_movimiento as integer,",
+				"          id_efectivo as integer,",
+				"          id_unidad_destino as integer,",
+				"          id_rango as integer,",
+				"          id_tipo as integer,",
+				"          fecha_movimiento as string,",
+				"          antiguedad_anios as string,",
+				"          salario_mensual as string,",
+				"          observaciones as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 derive(fecha_movimiento = coalesce(toDate(fecha_movimiento, 'yyyy/MM/dd'), toDate(fecha_movimiento, 'yyyy-MM-dd'), toDate(fecha_movimiento, 'dd-MM-yyyy'), toDate(fecha_movimiento, 'dd/MM/yyyy'), toDate(fecha_movimiento, 'MM-dd-yyyy'), toDate(fecha_movimiento, 'MM/dd/yyyy'), toDate(fecha_movimiento, 'yyyyMMdd')),",
+				"          antiguedad_anios = toDecimal(case(rlike(lower(antiguedad_anios), 'cero'), '0', rlike(lower(antiguedad_anios), 'uno|un'), '1', rlike(lower(antiguedad_anios), 'dos'), '2', rlike(lower(antiguedad_anios), 'tres'), '3', rlike(lower(antiguedad_anios), 'cuatro'), '4', rlike(lower(antiguedad_anios), 'cinco'), '5', rlike(lower(antiguedad_anios), 'seis'), '6', rlike(lower(antiguedad_anios), 'siete'), '7', rlike(lower(antiguedad_anios), 'ocho'), '8', rlike(lower(antiguedad_anios), 'nueve'), '9', rlike(lower(antiguedad_anios), 'diez'), '10', rlike(lower(antiguedad_anios), 'once'), '11', rlike(lower(antiguedad_anios), 'doce'), '12', rlike(lower(antiguedad_anios), 'trece'), '13', rlike(lower(antiguedad_anios), 'catorce'), '14', rlike(lower(antiguedad_anios), 'quince'), '15', rlike(lower(antiguedad_anios), 'dieciseis|dieciséis'), '16', rlike(lower(antiguedad_anios), 'diecisiete'), '17', rlike(lower(antiguedad_anios), 'dieciocho'), '18', rlike(lower(antiguedad_anios), 'diecinueve'), '19', rlike(lower(antiguedad_anios), 'veintidos|veintidós'), '22', rlike(lower(antiguedad_anios), 'veintitres|veintitrés'), '23', rlike(lower(antiguedad_anios), 'veinticuatro'), '24', rlike(lower(antiguedad_anios), 'veinticinco'), '25', rlike(lower(antiguedad_anios), 'veintiun|veintiún|veintiuno'), '21', rlike(lower(antiguedad_anios), 'veinte'), '20', regexReplace(replace(antiguedad_anios, ',', '.'), '[^0-9\\\\.]', '')), 10, 1),",
+				"          salario_mensual = toDecimal(iif(rlike(salario_mensual, '.*,[0-9]{1,2}$'), replace(replace(regexReplace(salario_mensual, '[^0-9\\\\.,]', ''), '.', ''), ',', '.'), regexReplace(replace(replace(upper(salario_mensual), 'BS.-', ''), 'BS.', ''), '[^0-9\\\\.]', '')), 10, 2),",
+				"          observaciones = upper(trim(regexReplace(observaciones, '\\\\n', ' ')))) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+			]
+		}
+	}
+}
