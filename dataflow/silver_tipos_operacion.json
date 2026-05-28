@@ -18,7 +18,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "bronze_tipos_operacion",
+						"referenceName": "silver_tipos_operacion",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -42,11 +42,6 @@
 				"source1 derive(categoria = upper(trim(categoria))) ~> derivedColumn1",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     input(",
-				"          id_tipo as integer,",
-				"          nombre as string,",
-				"          categoria as string",
-				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
 				"     updateable:false,",
