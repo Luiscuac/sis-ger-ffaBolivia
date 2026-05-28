@@ -10,7 +10,21 @@
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "id_especialidad",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nombre",
+				"type": "nvarchar"
+			},
+			{
+				"name": "area",
+				"type": "nvarchar"
+			}
+		],
 		"typeProperties": {
 			"schema": "silver",
 			"table": "tbl_especialidades"
