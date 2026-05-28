@@ -1,0 +1,78 @@
+{
+	"name": "gold_dim_efectivo",
+	"properties": {
+		"folder": {
+			"name": "gold"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "silver_efectivos",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "gold_dim_efectivo",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          id_efectivo_origen as integer,",
+				"          nombre as string,",
+				"          ci as string,",
+				"          genero as string,",
+				"          departamento_origen as string,",
+				"          estado as string,",
+				"          especialidad_nombre as string,",
+				"          especialidad_area as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT \\n    ef.id_efectivo AS id_efectivo_origen,\\n    ef.nombre,\\n    ef.ci,\\n    ef.genero,\\n    ef.departamento_origen,\\n    ef.estado,\\n    es.nombre AS especialidad_nombre,\\n    es.area AS especialidad_area\\nFROM silver.tbl_efectivos ef\\nLEFT JOIN silver.tbl_especialidades es \\n    ON ef.id_especialidad = es.id_especialidad',",
+				"     format: 'query') ~> source1",
+				"source1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          sk_efectivo as integer,",
+				"          id_efectivo_origen as integer,",
+				"          nombre as string,",
+				"          ci as string,",
+				"          genero as string,",
+				"          departamento_origen as string,",
+				"          estado as string,",
+				"          especialidad_nombre as string,",
+				"          especialidad_area as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          id_efectivo_origen,",
+				"          nombre,",
+				"          ci,",
+				"          genero,",
+				"          departamento_origen,",
+				"          estado,",
+				"          especialidad_nombre,",
+				"          especialidad_area",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
