@@ -43,7 +43,15 @@
 					"name": "goldtipomov"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "gold_fact_movimientos_personal",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "lookup1"
@@ -145,43 +153,47 @@
 				"     broadcast: 'auto')~> lookup4",
 				"lookup4 select(mapColumn(",
 				"          id_movimiento,",
-				"          id_efectivo,",
-				"          id_unidad_destino,",
-				"          id_rango,",
-				"          id_tipo,",
 				"          fecha_movimiento,",
 				"          antiguedad_anios,",
 				"          salario_mensual,",
-				"          observaciones,",
 				"          sk_efectivo,",
-				"          id_efectivo_origen,",
-				"          nombre = goldefectivo@nombre,",
-				"          ci,",
-				"          genero,",
-				"          departamento_origen,",
-				"          estado,",
-				"          especialidad_nombre,",
-				"          especialidad_area,",
 				"          sk_unidad,",
-				"          id_unidad_origen,",
-				"          nombre = goldunidad@nombre,",
-				"          codigo,",
-				"          ciudad,",
-				"          departamento,",
-				"          tipo_cuartel,",
 				"          sk_rango,",
-				"          id_rango_origen,",
-				"          nombre = goldrango@nombre,",
-				"          categoria,",
-				"          nivel_jerarquico,",
-				"          abreviatura,",
-				"          sk_tipo_movimiento,",
-				"          id_tipo_origen,",
-				"          nombre = goldtipomov@nombre,",
-				"          descripcion",
+				"          sk_tipo_movimiento",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1"
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          sk_movimiento as integer,",
+				"          id_movimiento_origen as integer,",
+				"          sk_efectivo as integer,",
+				"          sk_unidad_destino as integer,",
+				"          sk_rango as integer,",
+				"          sk_tipo_movimiento as integer,",
+				"          sk_fecha_movimiento as date,",
+				"          antiguedad_anios as decimal(5,1),",
+				"          salario_mensual as decimal(12,2)",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          id_movimiento_origen = id_movimiento,",
+				"          sk_efectivo,",
+				"          sk_unidad_destino = sk_unidad,",
+				"          sk_rango,",
+				"          sk_tipo_movimiento,",
+				"          sk_fecha_movimiento = fecha_movimiento,",
+				"          antiguedad_anios,",
+				"          salario_mensual",
+				"     )) ~> sink1"
 			]
 		}
 	}
